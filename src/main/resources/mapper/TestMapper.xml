@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.seckillbin.mapper.TestMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.example.seckillbin.pojo.Test">
+        <id column="ID" property="id" />
+        <result column="BINARY_DOUBLES" property="binaryDoubles" />
+        <result column="BINARY_FLOATS" property="binaryFloats" />
+        <result column="BLOBS" property="blobs" />
+        <result column="CLOBS" property="clobs" />
+        <result column="DATES" property="dates" />
+        <result column="LONGS" property="longs" />
+        <result column="NCLOBS" property="nclobs" />
+        <result column="NUMBERS" property="numbers" />
+        <result column="NVARCHAR2S" property="nvarchar2s" />
+        <result column="RAWS" property="raws" />
+        <result column="VARCHAR2S" property="varchar2s" />
+        <result column="CHARS" property="chars" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ID, BINARY_DOUBLES, BINARY_FLOATS, BLOBS, CLOBS, DATES, LONGS, NCLOBS, NUMBERS, NVARCHAR2S, RAWS, VARCHAR2S, CHARS
+    </sql>
+
+</mapper>
