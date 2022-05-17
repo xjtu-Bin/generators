@@ -81,7 +81,6 @@ public class ${entity} implements Serializable {
         <#elseif field.convert>
     @TableId("${field.annotationColumnName}")
         </#if>
-    @NotBlank(message = "${field.name}不能为空")
         <#-- 普通字段 -->
     <#elseif field.fill??>
     <#-- -----   存在字段填充设置   ----->
@@ -93,8 +92,13 @@ public class ${entity} implements Serializable {
     <#elseif field.convert>
     @TableField("${field.annotationColumnName}")
     </#if>
-    <#if "TOPORG" == field.name>
-    @Length(min = 32)
+    <#if "N"== field.customMap.NULLABLE>
+    @NotBlank(message = "${field.name}不能为空")
+    </#if>
+    <#if !field.customMap.DATA_PRECISION??>
+    @Length(max = ${field.customMap.DATA_LENGTH})
+    <#else>
+    @Length(max = ${field.customMap.DATA_PRECISION})
     </#if>
     <#-- 乐观锁注解 -->
     <#if (versionFieldName!"") == field.name>

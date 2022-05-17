@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.config.converts.OracleTypeConvert;
 import com.baomidou.mybatisplus.generator.config.converts.TypeConverts;
 import com.baomidou.mybatisplus.generator.config.po.TableInfo;
+import com.baomidou.mybatisplus.generator.config.querys.MySqlQuery;
+import com.baomidou.mybatisplus.generator.config.querys.OracleQuery;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.IColumnType;
@@ -59,7 +61,39 @@ public class CodeGenerator {
         gc.setDateType(DateType.ONLY_DATE);
         mpg.setGlobalConfig(gc);
         // 数据源配置
-        DataSourceConfig dsc = new DataSourceConfig();
+        DataSourceConfig dsc = new DataSourceConfig().setDbQuery(new OracleQuery() {
+            /**
+             * 重写父类预留查询自定义字段<br>
+             * 这里查询的 SQL 对应父类 tableFieldsSql 的查询字段，默认不能满足你的需求请重写它<br>
+             * 模板中调用：  table.fields 获取所有字段信息，
+             * 然后循环字段获取 field.customMap 从 MAP 中获取注入字段如下  NULL 或者 PRIVILEGES
+             */
+            @Override
+            public String tableFieldsSql() {
+                return "SELECT A.DATA_LENGTH, A.NULLABLE, A.DATA_PRECISION, A.COLUMN_NAME, CASE WHEN A.DATA_TYPE='NUMBER' THEN "
+                        + "(CASE WHEN A.DATA_PRECISION IS NULL THEN A.DATA_TYPE "
+                        + "WHEN NVL(A.DATA_SCALE, 0) > 0 THEN A.DATA_TYPE||'('||A.DATA_PRECISION||','||A.DATA_SCALE||')' "
+                        + "ELSE A.DATA_TYPE||'('||A.DATA_PRECISION||')' END) "
+                        + "ELSE A.DATA_TYPE END DATA_TYPE, B.COMMENTS,DECODE(C.POSITION, '1', 'PRI') KEY "
+                        + "FROM ALL_TAB_COLUMNS A "
+                        + " INNER JOIN ALL_COL_COMMENTS B ON A.TABLE_NAME = B.TABLE_NAME AND A.COLUMN_NAME = B.COLUMN_NAME AND B.OWNER = '#schema'"
+                        + " LEFT JOIN ALL_CONSTRAINTS D ON D.TABLE_NAME = A.TABLE_NAME AND D.CONSTRAINT_TYPE = 'P' AND D.OWNER = '#schema'"
+                        + " LEFT JOIN ALL_CONS_COLUMNS C ON C.CONSTRAINT_NAME = D.CONSTRAINT_NAME AND C.COLUMN_NAME=A.COLUMN_NAME AND C.OWNER = '#schema'"
+                        + "WHERE A.OWNER = '#schema' AND A.TABLE_NAME = '%s' ORDER BY A.COLUMN_ID ";
+            }
+            @Override
+            public String[] fieldCustom() {
+                return new String[]{"DATA_LENGTH","NULLABLE","DATA_PRECISION"};
+            }
+        });
+        /*new DataSourceConfig().setDbQuery(new MySqlQuery() {
+
+            *//*
+            @Override
+            public String[] fieldCustom() {
+                return new String[]{"NULL", "PRIVILEGES"};
+            }
+        })*/
         dsc.setUrl("jdbc:oracle:thin:@10.128.4.128:1521:orclrr");
         // 数据库 schema name
         //dsc.setSchemaName("gifts_ut");
@@ -76,7 +110,9 @@ public class CodeGenerator {
             @Override
             public IColumnType processTypeConvert(GlobalConfig globalConfig, String fieldType) {
                 String t = fieldType.toLowerCase();
-                if (t.contains("varchar2")) {
+                if (t.matches("char\\([1]\\)")) {
+                    return DbColumnType.BASE_BOOLEAN;
+                }else if (t.contains("varchar2")) {
                     return DbColumnType.STRING;
                 } else if (t.contains("char")) {
                     return DbColumnType.BASE_CHAR;
