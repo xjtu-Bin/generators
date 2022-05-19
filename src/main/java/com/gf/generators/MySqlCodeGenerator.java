@@ -19,7 +19,7 @@ public class MySqlCodeGenerator implements Generator{
      * 读取控制台内容
      * </p>
      */
-    public String scanner(String tip) {
+    public String scannerDbtype(String tip) {
         Scanner scanner = new Scanner(System.in);
         StringBuilder help = new StringBuilder();
         help.append("please input table name" + tip + "：");
@@ -114,7 +114,7 @@ public class MySqlCodeGenerator implements Generator{
         strategy.setEntityLombokModel(true);
         //生成 @RestController 控制器
         // strategy.setRestControllerStyle(true);
-        strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
+        strategy.setInclude(scannerDbtype("表名，多个英文逗号分割").split(","));
         strategy.setControllerMappingHyphenStyle(true);
         //表前缀
         strategy.setTablePrefix("t_");

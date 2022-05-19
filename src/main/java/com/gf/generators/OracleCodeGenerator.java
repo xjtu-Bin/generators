@@ -24,7 +24,7 @@ public class OracleCodeGenerator implements Generator{
      * 读取控制台内容
      * </p>
      */
-    public String scanner(String tip) {
+    public String scannerDbtype(String tip) {
         Scanner scanner = new Scanner(System.in);
         StringBuilder help = new StringBuilder();
         help.append("please input table name" + tip + "：");
@@ -39,6 +39,43 @@ public class OracleCodeGenerator implements Generator{
     }
 
     public void init() {
+
+        Scanner sc = new Scanner(System.in);
+        boolean flag = false;
+        //默认配置
+        //默认作者姓名
+        String author = "lb";
+        //默认数据源url
+        String dbUrl = "jdbc:oracle:thin:@10.128.4.128:1521:orclrr";
+        //默认数据库用户名
+        String userName = "gifts_ut";
+        //默认数据库密码
+        String userPassword = "gifts_ut";
+        //输出包路径配置
+        String parent = "com.gf.output";
+
+
+        System.out.println("默认配置如下，是否需要修改默认配置？（请输入是或否）");
+
+        System.out.println("默认作者姓名:" + author);
+        System.out.println("默认数据源url:" + dbUrl);
+        System.out.println("默认数据库用户名:" + userName);
+        System.out.println("默认数据库密码:" + userPassword);
+        System.out.println("默认输出包路径:" + parent);
+        System.out.println("******************************");
+        if (sc.next().equals("是")) {
+            System.out.println("请输入作者姓名");
+            author = sc.next();
+            System.out.println("请输入数据源url");
+            dbUrl = sc.next();
+            System.out.println("请输入数据库用户名");
+            userName = sc.next();
+            System.out.println("请输入数据库密码");
+            userPassword = sc.next();
+            System.out.println("请输入输出包路径");
+            parent = sc.next();
+        }
+
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
@@ -46,7 +83,7 @@ public class OracleCodeGenerator implements Generator{
         String projectPath = System.getProperty("user.dir");
         gc.setOutputDir(projectPath + "/src/main/java");
         //作者
-        gc.setAuthor("lb");
+        gc.setAuthor(author);
         //打开输出目录
         gc.setOpen(false);
         //xml开启 BaseResultMap
@@ -92,7 +129,7 @@ public class OracleCodeGenerator implements Generator{
                 return new String[]{"NULL", "PRIVILEGES"};
             }
         })*/
-        dsc.setUrl("jdbc:oracle:thin:@10.128.4.128:1521:orclrr");
+        dsc.setUrl(dbUrl);
         // 数据库 schema name
         //dsc.setSchemaName("gifts_ut");
         // 数据库类型
@@ -100,9 +137,9 @@ public class OracleCodeGenerator implements Generator{
         // 驱动名称
         dsc.setDriverName("oracle.jdbc.driver.OracleDriver");
         //用户名
-        dsc.setUsername("gifts_ut");
+        dsc.setUsername(userName);
         //密码
-        dsc.setPassword("gifts_ut");
+        dsc.setPassword(userPassword);
         //dsc.setTypeConvert(new OracleTypeConvert());
         dsc.setTypeConvert(new OracleTypeConvert(){
             @Override
@@ -146,7 +183,7 @@ public class OracleCodeGenerator implements Generator{
         mpg.setDataSource(dsc);
         // 包配置
         PackageConfig pc = new PackageConfig();
-        pc.setParent("com.gf.output")
+        pc.setParent(parent)
                 .setEntity("pojo")
                 .setMapper("mapper")
                 .setService("service")
@@ -202,7 +239,7 @@ public class OracleCodeGenerator implements Generator{
         strategy.setEntityLombokModel(true);
         //生成 @RestController 控制器
         strategy.setRestControllerStyle(true);
-        strategy.setInclude(scanner("表名，多个英文逗号分割").split(","));
+        strategy.setInclude(scannerDbtype("表名，多个英文逗号分割").split(","));
         strategy.setControllerMappingHyphenStyle(true);
         //表前缀
         strategy.setTablePrefix("t_");

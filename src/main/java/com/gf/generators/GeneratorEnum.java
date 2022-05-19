@@ -4,7 +4,6 @@ public enum GeneratorEnum {
     ORACLE("oracle",new OracleCodeGenerator()),MYSQL("mysql",new MySqlCodeGenerator());
 
 
-
     private String dbType;
 
     private Generator generator;
