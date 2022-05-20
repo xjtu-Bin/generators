@@ -1,6 +1,7 @@
 # Mybatis-plus代码生成源码分析
 
 ## 总体的流程
+![image](https://user-images.githubusercontent.com/69098342/168708883-d0c0e1dc-1e24-402e-965b-ada7e8f0fdaf.png)
 
 **AutoGenerator mpg = new AutoGenerator();**
 
